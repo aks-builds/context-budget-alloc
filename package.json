@@ -1,0 +1,7 @@
+{
+  "name": "context-budget-alloc",
+  "version": "0.0.1",
+  "description": "Manage an LLM context-window token budget across named zones.",
+  "type": "module",
+  "license": "MIT"
+}
