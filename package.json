@@ -3,5 +3,12 @@
   "version": "0.0.1",
   "description": "Manage an LLM context-window token budget across named zones.",
   "type": "module",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.5",
+    "typescript": "^5.5.4"
+  }
 }
