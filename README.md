@@ -1,5 +1,17 @@
 # context-budget-alloc
 
-A small TypeScript library and CLI for managing an LLM context-window token budget.
+Large language model prompts are assembled from several distinct kinds of
+content: a system prompt, tool/function definitions, retrieved context,
+conversation history, and headroom for the model's own output. Each of these
+competes for the same fixed context window, and it is easy for one of them
+(usually retrieval or history) to silently crowd out the rest.
 
-Status: early scaffolding, not yet usable.
+**context-budget-alloc** is a small TypeScript library (and CLI) that treats
+a context window as a budget split across named *zones*. Each zone gets a
+target share of the window, or a hard token cap. The library tracks live
+usage per zone, tells you how much room is left, and, when a zone is about
+to overflow, either borrows spare capacity from an underused zone or reports
+which zone needs to be compressed.
+
+Status: core budget/zone tracking is in place; rebalancing and the CLI are
+still being built.
