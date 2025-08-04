@@ -7,7 +7,17 @@ describe("Zone", () => {
     expect(zone.capTokens(1000)).toBe(400);
   });
 
-  it("rejects a missing targetPercent", () => {
+  it("computes cap tokens from hardCapTokens regardless of total", () => {
+    const zone = new Zone({ name: "system", hardCapTokens: 500 });
+    expect(zone.capTokens(1000)).toBe(500);
+    expect(zone.capTokens(10)).toBe(500);
+  });
+
+  it("rejects zones with both targetPercent and hardCapTokens", () => {
+    expect(() => new Zone({ name: "bad", targetPercent: 0.1, hardCapTokens: 10 })).toThrow();
+  });
+
+  it("rejects zones with neither cap kind set", () => {
     expect(() => new Zone({ name: "bad" })).toThrow();
   });
 
