@@ -27,4 +27,17 @@ describe("ContextBudget", () => {
     const budget = makeBudget();
     expect(() => budget.addZone({ name: "tools", targetPercent: 0.1 })).toThrow();
   });
+
+  it("computes per-zone utilization", () => {
+    const budget = makeBudget();
+    budget.recordUsage("system", 50);
+    expect(budget.utilization("system")).toBe(0.5);
+  });
+
+  it("computes overall utilization across zones", () => {
+    const budget = makeBudget();
+    budget.recordUsage("system", 50);
+    budget.recordUsage("tools", 50);
+    expect(budget.overallUtilization()).toBe(0.1);
+  });
 });
