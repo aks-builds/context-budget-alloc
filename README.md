@@ -15,3 +15,24 @@ which zone needs to be compressed.
 
 Status: core budget/zone tracking is in place; rebalancing and the CLI are
 still being built.
+
+## Usage
+
+\`\`\`ts
+import { ContextBudget } from "context-budget-alloc";
+
+const budget = new ContextBudget({
+  totalTokens: 128000,
+  zones: [
+    { name: "system", targetPercent: 0.05 },
+    { name: "tools", targetPercent: 0.15 },
+    { name: "retrieval", targetPercent: 0.3 },
+    { name: "history", targetPercent: 0.4 },
+    { name: "buffer", targetPercent: 0.1 },
+  ],
+});
+
+budget.recordUsage("retrieval", 12000);
+console.log(budget.remaining("retrieval"));
+console.log(budget.utilization("retrieval"));
+\`\`\`
