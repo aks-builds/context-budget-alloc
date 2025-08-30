@@ -21,13 +21,17 @@ export class Zone {
     this.hardCapTokens = config.hardCapTokens;
   }
 
-  // Floor (not round) percent-based caps: rounding up could push a set of
-  // zones' caps past totalTokens when several zones round up at once.
+  /**
+   * Resolve this zone's cap in tokens given the current total window size.
+   * Hard caps are returned as-is; percent-based caps are floored so that
+   * several zones rounding up at once cannot exceed the window.
+   */
   capTokens(totalTokens: number): number {
     if (this.hardCapTokens !== undefined) return this.hardCapTokens;
     return Math.floor((this.targetPercent ?? 0) * totalTokens);
   }
 
+  /** Add to this zone's recorded usage. */
   record(tokens: number): void {
     this.usedTokens += tokens;
   }
