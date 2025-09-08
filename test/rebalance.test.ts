@@ -10,11 +10,22 @@ describe("rebalance", () => {
     expect(result.resolved).toBe(true);
   });
 
-  it("flags an overflowing zone for compression", () => {
+  it("flags an overflowing zone for compression when nothing can lend", () => {
     const zone = new Zone({ name: "a", targetPercent: 0.2 });
     zone.record(30);
     const result = rebalance([zone], 100);
     expect(result.resolved).toBe(false);
     expect(result.actions).toEqual([{ type: "compress", zone: "a", amount: 10 }]);
+  });
+
+  it("borrows spare capacity from an underused zone", () => {
+    const a = new Zone({ name: "a", targetPercent: 0.2 });
+    const b = new Zone({ name: "b", targetPercent: 0.8 });
+    a.record(30);
+    b.record(10);
+
+    const result = rebalance([a, b], 100);
+    expect(result.resolved).toBe(true);
+    expect(result.actions).toEqual([{ type: "borrow", zone: "a", amount: 10, from: "b" }]);
   });
 });
