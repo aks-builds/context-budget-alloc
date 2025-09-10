@@ -16,21 +16,21 @@ export function rebalance(zones: Zone[], totalTokens: number): RebalanceResult {
   const actions: RebalanceAction[] = [];
   let resolved = true;
 
-  const remainingOf = (zone: Zone) => zone.capTokens(totalTokens) - zone.used;
-  const spare = new Map(zones.map((z) => [z.name, remainingOf(z)]));
+  const overflowing = zones.filter((zone) => zone.remaining(totalTokens) < 0);
 
-  for (const zone of zones) {
-    let deficit = -(spare.get(zone.name) ?? 0);
-    if (deficit <= 0) continue;
+  for (const zone of overflowing) {
+    let deficit = -zone.remaining(totalTokens);
 
-    for (const lender of zones) {
-      if (lender === zone || deficit <= 0) continue;
-      const lenderSpare = spare.get(lender.name) ?? 0;
-      if (lenderSpare <= 0) continue;
+    const lenders = zones.filter((z) => z !== zone && z.lendable && z.remaining(totalTokens) > 0);
 
-      const amount = Math.min(lenderSpare, deficit);
-      spare.set(lender.name, lenderSpare - amount);
-      spare.set(zone.name, (spare.get(zone.name) ?? 0) + amount);
+    for (const lender of lenders) {
+      if (deficit <= 0) break;
+      const spareAmount = lender.remaining(totalTokens);
+      const amount = Math.min(spareAmount, deficit);
+      if (amount <= 0) continue;
+
+      lender.borrow(-amount);
+      zone.borrow(amount);
       deficit -= amount;
       actions.push({ type: "borrow", zone: zone.name, amount, from: lender.name });
     }

@@ -30,15 +30,11 @@ export class ContextBudget {
   }
 
   remaining(zoneName: string): number {
-    const zone = this.getZone(zoneName);
-    return zone.capTokens(this.totalTokens) - zone.used;
+    return this.getZone(zoneName).remaining(this.totalTokens);
   }
 
   utilization(zoneName: string): number {
-    const zone = this.getZone(zoneName);
-    const cap = zone.capTokens(this.totalTokens);
-    if (cap <= 0) return zone.used > 0 ? Infinity : 0;
-    return zone.used / cap;
+    return this.getZone(zoneName).utilization(this.totalTokens);
   }
 
   overallUtilization(): number {

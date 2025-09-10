@@ -2,8 +2,10 @@ import type { ZoneConfig } from "./types.js";
 
 export class Zone {
   readonly name: string;
+  readonly lendable: boolean;
   private readonly targetPercent?: number;
   private readonly hardCapTokens?: number;
+  private borrowedTokens = 0;
   private usedTokens = 0;
 
   constructor(config: ZoneConfig) {
@@ -19,24 +21,43 @@ export class Zone {
     this.name = config.name;
     this.targetPercent = config.targetPercent;
     this.hardCapTokens = config.hardCapTokens;
+    this.lendable = config.lendable ?? true;
   }
 
-  /**
-   * Resolve this zone's cap in tokens given the current total window size.
-   * Hard caps are returned as-is; percent-based caps are floored so that
-   * several zones rounding up at once cannot exceed the window.
-   */
+  /** Resolve this zone's cap in tokens given the current total window size. */
   capTokens(totalTokens: number): number {
     if (this.hardCapTokens !== undefined) return this.hardCapTokens;
     return Math.floor((this.targetPercent ?? 0) * totalTokens);
   }
 
-  /** Add to this zone's recorded usage. */
   record(tokens: number): void {
     this.usedTokens += tokens;
   }
 
   get used(): number {
     return this.usedTokens;
+  }
+
+  /** Adjust borrowed capacity. Positive = borrowed in, negative = lent out. */
+  borrow(tokens: number): void {
+    this.borrowedTokens += tokens;
+  }
+
+  get borrowed(): number {
+    return this.borrowedTokens;
+  }
+
+  effectiveCap(totalTokens: number): number {
+    return this.capTokens(totalTokens) + this.borrowedTokens;
+  }
+
+  remaining(totalTokens: number): number {
+    return this.effectiveCap(totalTokens) - this.usedTokens;
+  }
+
+  utilization(totalTokens: number): number {
+    const cap = this.effectiveCap(totalTokens);
+    if (cap <= 0) return this.usedTokens > 0 ? Infinity : 0;
+    return this.usedTokens / cap;
   }
 }
