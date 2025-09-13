@@ -27,4 +27,22 @@ describe("Zone", () => {
     zone.record(25);
     expect(zone.used).toBe(75);
   });
+
+  it("computes remaining capacity including borrowed tokens", () => {
+    const zone = new Zone({ name: "buffer", targetPercent: 0.1 });
+    zone.record(5);
+    expect(zone.remaining(100)).toBe(5);
+    zone.borrow(10);
+    expect(zone.remaining(100)).toBe(15);
+  });
+
+  it("defaults lendable to true", () => {
+    const zone = new Zone({ name: "history", targetPercent: 0.4 });
+    expect(zone.lendable).toBe(true);
+  });
+
+  it("respects lendable: false", () => {
+    const zone = new Zone({ name: "system", targetPercent: 0.1, lendable: false });
+    expect(zone.lendable).toBe(false);
+  });
 });
