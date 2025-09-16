@@ -1,5 +1,6 @@
 import type { BudgetConfig, ZoneConfig } from "./types.js";
 import { Zone } from "./zone.js";
+import { rebalance as runRebalance, type RebalanceResult } from "./rebalance.js";
 
 export class ContextBudget {
   readonly totalTokens: number;
@@ -41,5 +42,10 @@ export class ContextBudget {
     let used = 0;
     for (const zone of this.zones.values()) used += zone.used;
     return this.totalTokens > 0 ? used / this.totalTokens : 0;
+  }
+
+  /** Attempt to resolve any zone that is currently over its cap. */
+  rebalance(): RebalanceResult {
+    return runRebalance(Array.from(this.zones.values()), this.totalTokens);
   }
 }
