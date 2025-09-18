@@ -5,7 +5,7 @@ function makeBudget() {
   return new ContextBudget({
     totalTokens: 1000,
     zones: [
-      { name: "system", targetPercent: 0.1 },
+      { name: "system", targetPercent: 0.1, lendable: false },
       { name: "tools", targetPercent: 0.2 },
     ],
   });
@@ -39,5 +39,12 @@ describe("ContextBudget", () => {
     budget.recordUsage("system", 50);
     budget.recordUsage("tools", 50);
     expect(budget.overallUtilization()).toBe(0.1);
+  });
+
+  it("rebalances overflowing zones by borrowing", () => {
+    const budget = makeBudget();
+    budget.recordUsage("tools", 250);
+    const result = budget.rebalance();
+    expect(result.actions.some((a) => a.zone === "tools" && a.type === "borrow")).toBe(true);
   });
 });
