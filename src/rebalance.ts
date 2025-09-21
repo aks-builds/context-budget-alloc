@@ -1,16 +1,5 @@
+import type { RebalanceAction, RebalanceResult } from "./types.js";
 import type { Zone } from "./zone.js";
-
-export interface RebalanceAction {
-  type: "borrow" | "compress";
-  zone: string;
-  amount: number;
-  from?: string;
-}
-
-export interface RebalanceResult {
-  actions: RebalanceAction[];
-  resolved: boolean;
-}
 
 export function rebalance(zones: Zone[], totalTokens: number): RebalanceResult {
   const actions: RebalanceAction[] = [];

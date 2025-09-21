@@ -11,3 +11,17 @@ export interface BudgetConfig {
   totalTokens: number;
   zones: ZoneConfig[];
 }
+
+export type RebalanceActionType = "borrow" | "compress";
+
+export interface RebalanceAction {
+  type: RebalanceActionType;
+  zone: string;
+  amount: number;
+  from?: string;
+}
+
+export interface RebalanceResult {
+  actions: RebalanceAction[];
+  resolved: boolean;
+}
