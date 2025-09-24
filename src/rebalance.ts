@@ -1,16 +1,25 @@
 import type { RebalanceAction, RebalanceResult } from "./types.js";
 import type { Zone } from "./zone.js";
 
+/**
+ * Attempts to resolve zones that are over their cap by borrowing spare
+ * capacity from underused, lendable zones. Zones with higher priority
+ * borrow first; among lenders, lower-priority zones lend first.
+ */
 export function rebalance(zones: Zone[], totalTokens: number): RebalanceResult {
   const actions: RebalanceAction[] = [];
   let resolved = true;
 
-  const overflowing = zones.filter((zone) => zone.remaining(totalTokens) < 0);
+  const overflowing = zones
+    .filter((zone) => zone.remaining(totalTokens) < 0)
+    .sort((a, b) => b.priority - a.priority);
 
   for (const zone of overflowing) {
     let deficit = -zone.remaining(totalTokens);
 
-    const lenders = zones.filter((z) => z !== zone && z.lendable && z.remaining(totalTokens) > 0);
+    const lenders = zones
+      .filter((z) => z !== zone && z.lendable && z.remaining(totalTokens) > 0)
+      .sort((a, b) => a.priority - b.priority);
 
     for (const lender of lenders) {
       if (deficit <= 0) break;
