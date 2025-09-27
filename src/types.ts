@@ -4,6 +4,7 @@ export interface ZoneConfig {
   name: string;
   targetPercent?: number;
   hardCapTokens?: number;
+  priority?: number;
   lendable?: boolean;
 }
 

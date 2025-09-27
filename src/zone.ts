@@ -3,6 +3,7 @@ import type { ZoneConfig } from "./types.js";
 export class Zone {
   readonly name: string;
   readonly lendable: boolean;
+  readonly priority: number;
   private readonly targetPercent?: number;
   private readonly hardCapTokens?: number;
   private borrowedTokens = 0;
@@ -22,6 +23,7 @@ export class Zone {
     this.targetPercent = config.targetPercent;
     this.hardCapTokens = config.hardCapTokens;
     this.lendable = config.lendable ?? true;
+    this.priority = config.priority ?? 0;
   }
 
   /** Resolve this zone's cap in tokens given the current total window size. */
