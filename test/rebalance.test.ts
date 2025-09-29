@@ -28,4 +28,24 @@ describe("rebalance", () => {
     expect(result.resolved).toBe(true);
     expect(result.actions).toEqual([{ type: "borrow", zone: "a", amount: 10, from: "b" }]);
   });
+
+  it("skips zones marked non-lendable", () => {
+    const a = new Zone({ name: "a", targetPercent: 0.2 });
+    const system = new Zone({ name: "system", targetPercent: 0.8, lendable: false });
+    a.record(30);
+
+    const result = rebalance([a, system], 100);
+    expect(result.resolved).toBe(false);
+    expect(result.actions).toEqual([{ type: "compress", zone: "a", amount: 10 }]);
+  });
+
+  it("prefers borrowing from lower priority zones first", () => {
+    const a = new Zone({ name: "a", targetPercent: 0.2, priority: 5 });
+    const low = new Zone({ name: "low", targetPercent: 0.4, priority: 0 });
+    const high = new Zone({ name: "high", targetPercent: 0.4, priority: 10 });
+    a.record(30);
+
+    const result = rebalance([a, low, high], 100);
+    expect(result.actions[0]).toMatchObject({ from: "low" });
+  });
 });
