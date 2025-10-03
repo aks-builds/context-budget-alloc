@@ -12,6 +12,9 @@
       "import": "./dist/index.js"
     }
   },
+  "bin": {
+    "cba": "./dist/cli.js"
+  },
   "files": [
     "dist",
     "README.md",
