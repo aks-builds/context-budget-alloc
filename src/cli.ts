@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 import { existsSync, writeFileSync } from "node:fs";
 import type { BudgetConfig } from "./types.js";
+import { ContextBudget } from "./budget.js";
+import { loadBudgetConfigFile } from "./config.js";
 
 const VERSION = "0.0.1";
 
 const HELP = `context-budget-alloc (cba) - manage an LLM context-window token budget
 
 Usage:
-  cba init [path]   Write a starter budget config to [path] (default: cba.config.json)
-  cba --help        Show this help
-  cba --version     Show the installed version
+  cba init [path]           Write a starter budget config to [path] (default: cba.config.json)
+  cba status <config>       Print zone utilization for a config
+  cba --help                Show this help
+  cba --version             Show the installed version
 `;
 
 function sampleConfig(): BudgetConfig {
@@ -23,6 +26,16 @@ function sampleConfig(): BudgetConfig {
       { name: "buffer", targetPercent: 0.1, priority: 0 },
     ],
   };
+}
+
+function printStatus(config: BudgetConfig): void {
+  const budget = new ContextBudget(config);
+  console.log(`Total window: ${config.totalTokens} tokens\n`);
+  for (const zoneConfig of config.zones) {
+    const remaining = budget.remaining(zoneConfig.name);
+    const util = budget.utilization(zoneConfig.name);
+    console.log(`${zoneConfig.name}: remaining=${remaining} utilization=${(util * 100).toFixed(1)}%`);
+  }
 }
 
 function main(): void {
@@ -46,6 +59,17 @@ function main(): void {
     }
     writeFileSync(path, JSON.stringify(sampleConfig(), null, 2) + "\n");
     console.log(`Wrote starter config to ${path}`);
+    return;
+  }
+
+  if (command === "status") {
+    const configPath = rest[0];
+    if (!configPath) {
+      console.error("Usage: cba status <config>");
+      process.exitCode = 1;
+      return;
+    }
+    printStatus(loadBudgetConfigFile(configPath));
     return;
   }
 
