@@ -1,0 +1,10 @@
+{
+  "totalTokens": 128000,
+  "zones": [
+    { "name": "system", "targetPercent": 0.05, "priority": 3, "lendable": false },
+    { "name": "tools", "targetPercent": 0.15, "priority": 2 },
+    { "name": "retrieval", "targetPercent": 0.3, "priority": 1 },
+    { "name": "history", "targetPercent": 0.4, "priority": 1 },
+    { "name": "buffer", "targetPercent": 0.1, "priority": 0 }
+  ]
+}
