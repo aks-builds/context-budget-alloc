@@ -36,3 +36,10 @@ budget.recordUsage("retrieval", 12000);
 console.log(budget.remaining("retrieval"));
 console.log(budget.utilization("retrieval"));
 \`\`\`
+
+## CLI
+
+\`\`\`sh
+npx cba init                       # write a starter cba.config.json
+npx cba status cba.config.json     # print zone utilization
+\`\`\`
