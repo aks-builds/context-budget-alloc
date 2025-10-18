@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { BudgetConfig } from "./types.js";
 import { ContextBudget } from "./budget.js";
 import { loadBudgetConfigFile } from "./config.js";
@@ -9,10 +9,10 @@ const VERSION = "0.0.1";
 const HELP = `context-budget-alloc (cba) - manage an LLM context-window token budget
 
 Usage:
-  cba init [path]           Write a starter budget config to [path] (default: cba.config.json)
-  cba status <config>       Print zone utilization for a config
-  cba --help                Show this help
-  cba --version             Show the installed version
+  cba init [path]              Write a starter budget config to [path] (default: cba.config.json)
+  cba status <config> [log]    Print zone utilization, optionally replaying a usage log (JSONL)
+  cba --help                   Show this help
+  cba --version                Show the installed version
 `;
 
 function sampleConfig(): BudgetConfig {
@@ -28,8 +28,21 @@ function sampleConfig(): BudgetConfig {
   };
 }
 
-function printStatus(config: BudgetConfig): void {
+function loadUsageLog(path: string): Array<{ zone: string; tokens: number }> {
+  return readFileSync(path, "utf8")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+}
+
+function printStatus(config: BudgetConfig, logPath?: string): void {
   const budget = new ContextBudget(config);
+  if (logPath) {
+    for (const entry of loadUsageLog(logPath)) {
+      budget.recordUsage(entry.zone, entry.tokens);
+    }
+  }
   console.log(`Total window: ${config.totalTokens} tokens\n`);
   for (const zoneConfig of config.zones) {
     const remaining = budget.remaining(zoneConfig.name);
@@ -65,11 +78,11 @@ function main(): void {
   if (command === "status") {
     const configPath = rest[0];
     if (!configPath) {
-      console.error("Usage: cba status <config>");
+      console.error("Usage: cba status <config> [log]");
       process.exitCode = 1;
       return;
     }
-    printStatus(loadBudgetConfigFile(configPath));
+    printStatus(loadBudgetConfigFile(configPath), rest[1]);
     return;
   }
 
