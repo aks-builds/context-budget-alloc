@@ -82,6 +82,11 @@ function main(): void {
       process.exitCode = 1;
       return;
     }
+    if (!existsSync(configPath)) {
+      console.error(`Config file not found: ${configPath}`);
+      process.exitCode = 1;
+      return;
+    }
     printStatus(loadBudgetConfigFile(configPath), rest[1]);
     return;
   }
