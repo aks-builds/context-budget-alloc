@@ -11,6 +11,7 @@ const HELP = `context-budget-alloc (cba) - manage an LLM context-window token bu
 Usage:
   cba init [path]              Write a starter budget config to [path] (default: cba.config.json)
   cba status <config> [log]    Print zone utilization, optionally replaying a usage log (JSONL)
+  cba report <config> [log]    Print a JSON report instead of a table
   cba --help                   Show this help
   cba --version                Show the installed version
 `;
@@ -36,19 +37,34 @@ function loadUsageLog(path: string): Array<{ zone: string; tokens: number }> {
     .map((line) => JSON.parse(line));
 }
 
-function printStatus(config: BudgetConfig, logPath?: string): void {
+function buildBudget(config: BudgetConfig, logPath?: string): ContextBudget {
   const budget = new ContextBudget(config);
   if (logPath) {
     for (const entry of loadUsageLog(logPath)) {
       budget.recordUsage(entry.zone, entry.tokens);
     }
   }
+  return budget;
+}
+
+function printStatus(config: BudgetConfig, logPath?: string): void {
+  const budget = buildBudget(config, logPath);
   console.log(`Total window: ${config.totalTokens} tokens\n`);
   for (const zoneConfig of config.zones) {
     const remaining = budget.remaining(zoneConfig.name);
     const util = budget.utilization(zoneConfig.name);
     console.log(`${zoneConfig.name}: remaining=${remaining} utilization=${(util * 100).toFixed(1)}%`);
   }
+}
+
+function printReport(config: BudgetConfig, logPath?: string): void {
+  const budget = buildBudget(config, logPath);
+  const report = config.zones.map((z) => ({
+    name: z.name,
+    remaining: budget.remaining(z.name),
+    utilization: budget.utilization(z.name),
+  }));
+  console.log(JSON.stringify(report, null, 2));
 }
 
 function main(): void {
@@ -75,19 +91,19 @@ function main(): void {
     return;
   }
 
-  if (command === "status") {
+  if (command === "status" || command === "report") {
     const configPath = rest[0];
-    if (!configPath) {
-      console.error("Usage: cba status <config> [log]");
+    if (!configPath || !existsSync(configPath)) {
+      console.error(`Usage: cba ${command} <config> [log]`);
       process.exitCode = 1;
       return;
     }
-    if (!existsSync(configPath)) {
-      console.error(`Config file not found: ${configPath}`);
-      process.exitCode = 1;
-      return;
+    const config = loadBudgetConfigFile(configPath);
+    if (command === "report") {
+      printReport(config, rest[1]);
+    } else {
+      printStatus(config, rest[1]);
     }
-    printStatus(loadBudgetConfigFile(configPath), rest[1]);
     return;
   }
 
