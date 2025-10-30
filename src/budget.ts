@@ -1,4 +1,4 @@
-import type { BudgetConfig, RebalanceResult, ZoneConfig } from "./types.js";
+import type { BudgetConfig, BudgetSnapshot, RebalanceResult, ZoneConfig } from "./types.js";
 import { Zone } from "./zone.js";
 import { rebalance as runRebalance } from "./rebalance.js";
 
@@ -46,5 +46,25 @@ export class ContextBudget {
 
   rebalance(): RebalanceResult {
     return runRebalance(Array.from(this.zones.values()), this.totalTokens);
+  }
+
+  snapshot(): BudgetSnapshot {
+    return {
+      totalTokens: this.totalTokens,
+      zones: Array.from(this.zones.values()).map((z) => ({
+        name: z.name,
+        capTokens: z.effectiveCap(this.totalTokens),
+        usedTokens: z.used,
+        remainingTokens: z.remaining(this.totalTokens),
+        utilization: z.utilization(this.totalTokens),
+        priority: z.priority,
+        lendable: z.lendable,
+      })),
+      overallUtilization: this.overallUtilization(),
+    };
+  }
+
+  toJSON(): BudgetSnapshot {
+    return this.snapshot();
   }
 }

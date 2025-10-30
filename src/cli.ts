@@ -11,7 +11,7 @@ const HELP = `context-budget-alloc (cba) - manage an LLM context-window token bu
 Usage:
   cba init [path]              Write a starter budget config to [path] (default: cba.config.json)
   cba status <config> [log]    Print zone utilization, optionally replaying a usage log (JSONL)
-  cba report <config> [log]    Print a JSON report instead of a table
+  cba report <config> [log]    Print a JSON snapshot instead of a table
   cba --help                   Show this help
   cba --version                Show the installed version
 `;
@@ -49,22 +49,38 @@ function buildBudget(config: BudgetConfig, logPath?: string): ContextBudget {
 
 function printStatus(config: BudgetConfig, logPath?: string): void {
   const budget = buildBudget(config, logPath);
-  console.log(`Total window: ${config.totalTokens} tokens\n`);
-  for (const zoneConfig of config.zones) {
-    const remaining = budget.remaining(zoneConfig.name);
-    const util = budget.utilization(zoneConfig.name);
-    console.log(`${zoneConfig.name}: remaining=${remaining} utilization=${(util * 100).toFixed(1)}%`);
+  const result = budget.rebalance();
+  const snapshot = budget.snapshot();
+
+  const nameWidth = Math.max(4, ...snapshot.zones.map((z) => z.name.length));
+  console.log(`Total window: ${snapshot.totalTokens} tokens\n`);
+  console.log(
+    `${"ZONE".padEnd(nameWidth)}  ${"CAP".padStart(8)}  ${"USED".padStart(8)}  ${"REMAINING".padStart(10)}  UTIL`
+  );
+  for (const zone of snapshot.zones) {
+    const util = Number.isFinite(zone.utilization) ? `${(zone.utilization * 100).toFixed(1)}%` : "n/a";
+    console.log(
+      `${zone.name.padEnd(nameWidth)}  ${String(zone.capTokens).padStart(8)}  ${String(zone.usedTokens).padStart(8)}  ${String(zone.remainingTokens).padStart(10)}  ${util}`
+    );
+  }
+  console.log(`\nOverall utilization: ${(snapshot.overallUtilization * 100).toFixed(1)}%`);
+
+  if (result.actions.length > 0) {
+    console.log("\nRebalance actions:");
+    for (const action of result.actions) {
+      if (action.type === "borrow") {
+        console.log(`  borrow ${action.amount} tokens into "${action.zone}" from "${action.from}"`);
+      } else {
+        console.log(`  compress "${action.zone}" by at least ${action.amount} tokens`);
+      }
+    }
   }
 }
 
 function printReport(config: BudgetConfig, logPath?: string): void {
   const budget = buildBudget(config, logPath);
-  const report = config.zones.map((z) => ({
-    name: z.name,
-    remaining: budget.remaining(z.name),
-    utilization: budget.utilization(z.name),
-  }));
-  console.log(JSON.stringify(report, null, 2));
+  budget.rebalance();
+  console.log(JSON.stringify(budget.snapshot(), null, 2));
 }
 
 function main(): void {
