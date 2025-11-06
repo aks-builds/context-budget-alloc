@@ -1,13 +1,16 @@
-import type { BudgetConfig, BudgetSnapshot, RebalanceResult, ZoneConfig } from "./types.js";
+import type { BudgetConfig, BudgetSnapshot, RebalanceResult, TokenCounter, ZoneConfig } from "./types.js";
 import { Zone } from "./zone.js";
 import { rebalance as runRebalance } from "./rebalance.js";
+import { defaultEstimator } from "./estimator.js";
 
 export class ContextBudget {
   readonly totalTokens: number;
   private readonly zones = new Map<string, Zone>();
+  private readonly counter: TokenCounter;
 
   constructor(config: BudgetConfig) {
     this.totalTokens = config.totalTokens;
+    this.counter = config.counter ?? defaultEstimator;
     for (const zoneConfig of config.zones) {
       this.addZone(zoneConfig);
     }
@@ -28,6 +31,13 @@ export class ContextBudget {
 
   recordUsage(zoneName: string, tokens: number): void {
     this.getZone(zoneName).record(tokens);
+  }
+
+  /** Estimate and record usage for a chunk of text using the configured counter. */
+  recordText(zoneName: string, text: string): number {
+    const tokens = this.counter(text);
+    this.recordUsage(zoneName, tokens);
+    return tokens;
   }
 
   remaining(zoneName: string): number {

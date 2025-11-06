@@ -11,6 +11,7 @@ export interface ZoneConfig {
 export interface BudgetConfig {
   totalTokens: number;
   zones: ZoneConfig[];
+  counter?: TokenCounter;
 }
 
 export interface ZoneSnapshot {
