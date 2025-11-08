@@ -7,6 +7,7 @@ function makeBudget() {
     zones: [
       { name: "system", targetPercent: 0.1, lendable: false },
       { name: "tools", targetPercent: 0.2 },
+      { name: "history", targetPercent: 0.3 },
     ],
   });
 }
@@ -16,6 +17,13 @@ describe("ContextBudget", () => {
     const budget = makeBudget();
     budget.recordUsage("tools", 50);
     expect(budget.remaining("tools")).toBe(150);
+  });
+
+  it("estimates and records text usage", () => {
+    const budget = makeBudget();
+    const tokens = budget.recordText("history", "a".repeat(40));
+    expect(tokens).toBe(10);
+    expect(budget.remaining("history")).toBe(290);
   });
 
   it("throws for unknown zones", () => {
