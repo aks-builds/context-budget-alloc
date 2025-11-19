@@ -1,5 +1,8 @@
 # context-budget-alloc
 
+![CI](https://github.com/aks-builds/context-budget-alloc/actions/workflows/ci.yml/badge.svg)
+
+
 Large language model prompts are assembled from several distinct kinds of
 content: a system prompt, tool/function definitions, retrieved context,
 conversation history, and headroom for the model's own output. Each of these
