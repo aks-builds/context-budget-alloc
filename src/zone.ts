@@ -19,7 +19,9 @@ export class Zone {
     if (config.targetPercent === undefined && config.hardCapTokens === undefined) {
       throw new Error(`Zone "${config.name}" must set targetPercent or hardCapTokens.`);
     }
-    this.name = config.name;
+    // Store the trimmed name so lookups by a config with accidental
+    // leading/trailing whitespace still resolve correctly.
+    this.name = config.name.trim();
     this.targetPercent = config.targetPercent;
     this.hardCapTokens = config.hardCapTokens;
     this.lendable = config.lendable ?? true;
