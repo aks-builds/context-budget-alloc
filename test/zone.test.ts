@@ -21,6 +21,11 @@ describe("Zone", () => {
     expect(() => new Zone({ name: "bad" })).toThrow();
   });
 
+  it("trims whitespace from zone names", () => {
+    const zone = new Zone({ name: "  history  ", targetPercent: 0.4 });
+    expect(zone.name).toBe("history");
+  });
+
   it("tracks recorded usage", () => {
     const zone = new Zone({ name: "tools", targetPercent: 0.2 });
     zone.record(50);
