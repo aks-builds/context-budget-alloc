@@ -1,4 +1,5 @@
 import type { ZoneConfig } from "./types.js";
+import { InvalidZoneConfigError } from "./errors.js";
 
 export class Zone {
   readonly name: string;
@@ -11,16 +12,18 @@ export class Zone {
 
   constructor(config: ZoneConfig) {
     if (!config.name || !config.name.trim()) {
-      throw new Error("Zone name must be a non-empty string.");
+      throw new InvalidZoneConfigError("Zone name must be a non-empty string.");
     }
     if (config.targetPercent !== undefined && config.hardCapTokens !== undefined) {
-      throw new Error(`Zone "${config.name}" cannot set both targetPercent and hardCapTokens.`);
+      throw new InvalidZoneConfigError(
+        `Zone "${config.name}" cannot set both targetPercent and hardCapTokens.`
+      );
     }
     if (config.targetPercent === undefined && config.hardCapTokens === undefined) {
-      throw new Error(`Zone "${config.name}" must set targetPercent or hardCapTokens.`);
+      throw new InvalidZoneConfigError(
+        `Zone "${config.name}" must set targetPercent or hardCapTokens.`
+      );
     }
-    // Store the trimmed name so lookups by a config with accidental
-    // leading/trailing whitespace still resolve correctly.
     this.name = config.name.trim();
     this.targetPercent = config.targetPercent;
     this.hardCapTokens = config.hardCapTokens;
@@ -35,6 +38,9 @@ export class Zone {
   }
 
   record(tokens: number): void {
+    if (tokens < 0) {
+      throw new InvalidZoneConfigError(`Cannot record negative usage for zone "${this.name}".`);
+    }
     this.usedTokens += tokens;
   }
 
