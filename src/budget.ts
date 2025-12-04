@@ -2,6 +2,7 @@ import type { BudgetConfig, BudgetSnapshot, RebalanceResult, TokenCounter, ZoneC
 import { Zone } from "./zone.js";
 import { rebalance as runRebalance } from "./rebalance.js";
 import { defaultEstimator } from "./estimator.js";
+import { DuplicateZoneError, UnknownZoneError } from "./errors.js";
 
 export class ContextBudget {
   readonly totalTokens: number;
@@ -17,15 +18,13 @@ export class ContextBudget {
   }
 
   addZone(config: ZoneConfig): void {
-    if (this.zones.has(config.name)) {
-      throw new Error(`Zone "${config.name}" already exists.`);
-    }
+    if (this.zones.has(config.name)) throw new DuplicateZoneError(config.name);
     this.zones.set(config.name, new Zone(config));
   }
 
   private getZone(name: string): Zone {
     const zone = this.zones.get(name);
-    if (!zone) throw new Error(`Zone "${name}" does not exist.`);
+    if (!zone) throw new UnknownZoneError(name);
     return zone;
   }
 
