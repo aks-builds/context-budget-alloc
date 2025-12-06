@@ -1,20 +1,21 @@
 import { readFileSync } from "node:fs";
 import type { BudgetConfig } from "./types.js";
+import { InvalidZoneConfigError } from "./errors.js";
 
 export function parseBudgetConfig(raw: unknown): BudgetConfig {
   if (typeof raw !== "object" || raw === null) {
-    throw new Error("Config must be a JSON object.");
+    throw new InvalidZoneConfigError("Config must be a JSON object.");
   }
   const obj = raw as Record<string, unknown>;
   if (typeof obj.totalTokens !== "number" || obj.totalTokens <= 0) {
-    throw new Error("Config must set a positive numeric totalTokens.");
+    throw new InvalidZoneConfigError("Config must set a positive numeric totalTokens.");
   }
   if (!Array.isArray(obj.zones) || obj.zones.length === 0) {
-    throw new Error("Config must define at least one zone in `zones`.");
+    throw new InvalidZoneConfigError("Config must define at least one zone in `zones`.");
   }
   for (const zone of obj.zones) {
     if (typeof zone !== "object" || zone === null || typeof (zone as any).name !== "string") {
-      throw new Error("Every zone needs a string `name`.");
+      throw new InvalidZoneConfigError("Every zone needs a string `name`.");
     }
   }
   return obj as unknown as BudgetConfig;
