@@ -4,3 +4,4 @@ export { rebalance } from "./rebalance.js";
 export { charsPerFourEstimator, wordBasedEstimator, defaultEstimator } from "./estimator.js";
 export { parseBudgetConfig, loadBudgetConfigFile } from "./config.js";
 export * from "./types.js";
+export * from "./errors.js";
