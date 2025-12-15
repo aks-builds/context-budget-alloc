@@ -1,6 +1,13 @@
 # context-budget-alloc
 
 ![CI](https://github.com/aks-builds/context-budget-alloc/actions/workflows/ci.yml/badge.svg)
+![license](https://img.shields.io/badge/license-MIT-blue.svg)
+
+## Table of contents
+
+- [Why](#context-budget-alloc)
+- [Usage](#usage)
+- [CLI](#cli)
 
 
 Large language model prompts are assembled from several distinct kinds of
