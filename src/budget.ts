@@ -2,7 +2,7 @@ import type { BudgetConfig, BudgetSnapshot, RebalanceResult, TokenCounter, ZoneC
 import { Zone } from "./zone.js";
 import { rebalance as runRebalance } from "./rebalance.js";
 import { defaultEstimator } from "./estimator.js";
-import { DuplicateZoneError, UnknownZoneError } from "./errors.js";
+import { DuplicateZoneError, InvalidZoneConfigError, UnknownZoneError } from "./errors.js";
 
 export class ContextBudget {
   readonly totalTokens: number;
@@ -10,6 +10,9 @@ export class ContextBudget {
   private readonly counter: TokenCounter;
 
   constructor(config: BudgetConfig) {
+    if (!Number.isFinite(config.totalTokens) || config.totalTokens <= 0) {
+      throw new InvalidZoneConfigError("totalTokens must be a positive, finite number.");
+    }
     this.totalTokens = config.totalTokens;
     this.counter = config.counter ?? defaultEstimator;
     for (const zoneConfig of config.zones) {
