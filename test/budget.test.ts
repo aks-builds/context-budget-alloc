@@ -36,10 +36,19 @@ describe("ContextBudget", () => {
     expect(() => budget.addZone({ name: "tools", targetPercent: 0.1 })).toThrow();
   });
 
+  it("rejects a non-positive totalTokens", () => {
+    expect(() => new ContextBudget({ totalTokens: 0, zones: [{ name: "a", targetPercent: 1 }] })).toThrow();
+  });
+
   it("computes per-zone utilization", () => {
     const budget = makeBudget();
     budget.recordUsage("system", 50);
     expect(budget.utilization("system")).toBe(0.5);
+  });
+
+  it("reports 0 utilization for a zone with zero cap and no usage", () => {
+    const budget = new ContextBudget({ totalTokens: 100, zones: [{ name: "a", hardCapTokens: 0 }] });
+    expect(budget.utilization("a")).toBe(0);
   });
 
   it("computes overall utilization across zones", () => {
