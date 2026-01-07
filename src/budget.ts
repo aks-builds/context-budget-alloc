@@ -1,6 +1,7 @@
 import type { BudgetConfig, BudgetSnapshot, RebalanceResult, TokenCounter, ZoneConfig } from "./types.js";
 import { Zone } from "./zone.js";
-import { rebalance as runRebalance } from "./rebalance.js";
+import { rebalance as defaultRebalance } from "./rebalance.js";
+import type { RebalanceStrategy } from "./plugins.js";
 import { defaultEstimator } from "./estimator.js";
 import { DuplicateZoneError, InvalidZoneConfigError, UnknownZoneError } from "./errors.js";
 
@@ -8,13 +9,15 @@ export class ContextBudget {
   readonly totalTokens: number;
   private readonly zones = new Map<string, Zone>();
   private readonly counter: TokenCounter;
+  private readonly strategy: RebalanceStrategy;
 
-  constructor(config: BudgetConfig) {
+  constructor(config: BudgetConfig, strategy: RebalanceStrategy = defaultRebalance) {
     if (!Number.isFinite(config.totalTokens) || config.totalTokens <= 0) {
       throw new InvalidZoneConfigError("totalTokens must be a positive, finite number.");
     }
     this.totalTokens = config.totalTokens;
     this.counter = config.counter ?? defaultEstimator;
+    this.strategy = strategy;
     for (const zoneConfig of config.zones) {
       this.addZone(zoneConfig);
     }
@@ -56,8 +59,9 @@ export class ContextBudget {
     return this.totalTokens > 0 ? used / this.totalTokens : 0;
   }
 
+  /** Attempt to resolve any zone that is currently over its cap. */
   rebalance(): RebalanceResult {
-    return runRebalance(Array.from(this.zones.values()), this.totalTokens);
+    return this.strategy(Array.from(this.zones.values()), this.totalTokens);
   }
 
   snapshot(): BudgetSnapshot {
