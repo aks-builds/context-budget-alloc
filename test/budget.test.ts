@@ -64,4 +64,21 @@ describe("ContextBudget", () => {
     const result = budget.rebalance();
     expect(result.actions.some((a) => a.zone === "tools" && a.type === "borrow")).toBe(true);
   });
+
+  it("supports a custom rebalance strategy", () => {
+    const budget = new ContextBudget(
+      { totalTokens: 100, zones: [{ name: "a", targetPercent: 1 }] },
+      () => ({ actions: [], resolved: true })
+    );
+    expect(budget.rebalance()).toEqual({ actions: [], resolved: true });
+  });
+
+  it("keeps rebalance idempotent when usage does not change between calls", () => {
+    const budget = makeBudget();
+    budget.recordUsage("tools", 250);
+    budget.rebalance();
+    const second = budget.rebalance();
+    expect(second.actions).toEqual([]);
+    expect(second.resolved).toBe(true);
+  });
 });
