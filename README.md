@@ -53,3 +53,8 @@ console.log(budget.utilization("retrieval"));
 npx cba init                       # write a starter cba.config.json
 npx cba status cba.config.json     # print zone utilization
 \`\`\`
+
+## More
+
+- [Architecture overview](docs/architecture.md)
+- [Examples](examples/)
