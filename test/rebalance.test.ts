@@ -48,4 +48,15 @@ describe("rebalance", () => {
     const result = rebalance([a, low, high], 100);
     expect(result.actions[0]).toMatchObject({ from: "low" });
   });
+
+  it("does not re-borrow on a second call with no new usage", () => {
+    const a = new Zone({ name: "a", targetPercent: 0.2 });
+    const b = new Zone({ name: "b", targetPercent: 0.8 });
+    a.record(30);
+    b.record(10);
+
+    rebalance([a, b], 100);
+    const second = rebalance([a, b], 100);
+    expect(second.actions).toEqual([]);
+  });
 });
