@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Pluggable `RebalanceStrategy` support via `ContextBudget`'s constructor.
+- Architecture overview and CONTRIBUTING docs.
+- `examples/basic-usage.ts` and `examples/custom-strategy.ts`.
+
 ## [0.1.0] - 2025-12-12
 
 ### Added
