@@ -1,4 +1,4 @@
-export { ContextBudget } from "./budget.js";
+export { ContextBudget, createBudget } from "./budget.js";
 export { Zone } from "./zone.js";
 export { rebalance } from "./rebalance.js";
 export { charsPerFourEstimator, wordBasedEstimator, defaultEstimator } from "./estimator.js";

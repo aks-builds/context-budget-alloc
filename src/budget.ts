@@ -84,3 +84,7 @@ export class ContextBudget {
     return this.snapshot();
   }
 }
+
+export function createBudget(config: BudgetConfig, strategy?: RebalanceStrategy): ContextBudget {
+  return new ContextBudget(config, strategy);
+}
