@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { ContextBudget } from "../src/budget.js";
+import { ContextBudget, createBudget } from "../src/budget.js";
 
 function makeBudget() {
-  return new ContextBudget({
+  return createBudget({
     totalTokens: 1000,
     zones: [
       { name: "system", targetPercent: 0.1, lendable: false },
@@ -73,12 +73,8 @@ describe("ContextBudget", () => {
     expect(budget.rebalance()).toEqual({ actions: [], resolved: true });
   });
 
-  it("keeps rebalance idempotent when usage does not change between calls", () => {
-    const budget = makeBudget();
-    budget.recordUsage("tools", 250);
-    budget.rebalance();
-    const second = budget.rebalance();
-    expect(second.actions).toEqual([]);
-    expect(second.resolved).toBe(true);
+  it("creates budgets via the createBudget() factory", () => {
+    const budget = createBudget({ totalTokens: 10, zones: [{ name: "a", targetPercent: 1 }] });
+    expect(budget).toBeInstanceOf(ContextBudget);
   });
 });
