@@ -64,6 +64,11 @@ export class ContextBudget {
     return this.strategy(Array.from(this.zones.values()), this.totalTokens);
   }
 
+  /** Clear all zones' usage and borrowed adjustments, e.g. for a new conversation turn. */
+  reset(): void {
+    for (const zone of this.zones.values()) zone.reset();
+  }
+
   snapshot(): BudgetSnapshot {
     return {
       totalTokens: this.totalTokens,

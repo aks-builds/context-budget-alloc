@@ -44,6 +44,12 @@ export class Zone {
     this.usedTokens += tokens;
   }
 
+  /** Clear recorded usage and any borrowed/lent adjustments, e.g. for a new conversation turn. */
+  reset(): void {
+    this.usedTokens = 0;
+    this.borrowedTokens = 0;
+  }
+
   get used(): number {
     return this.usedTokens;
   }
