@@ -33,12 +33,26 @@ describe("Zone", () => {
     expect(zone.used).toBe(75);
   });
 
+  it("rejects negative usage", () => {
+    const zone = new Zone({ name: "tools", targetPercent: 0.2 });
+    expect(() => zone.record(-1)).toThrow();
+  });
+
   it("computes remaining capacity including borrowed tokens", () => {
     const zone = new Zone({ name: "buffer", targetPercent: 0.1 });
     zone.record(5);
     expect(zone.remaining(100)).toBe(5);
     zone.borrow(10);
     expect(zone.remaining(100)).toBe(15);
+  });
+
+  it("resets usage and borrowed tokens", () => {
+    const zone = new Zone({ name: "history", targetPercent: 0.5 });
+    zone.record(10);
+    zone.borrow(5);
+    zone.reset();
+    expect(zone.used).toBe(0);
+    expect(zone.remaining(100)).toBe(50);
   });
 
   it("defaults lendable to true", () => {

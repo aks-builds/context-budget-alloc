@@ -77,4 +77,11 @@ describe("ContextBudget", () => {
     const budget = createBudget({ totalTokens: 10, zones: [{ name: "a", targetPercent: 1 }] });
     expect(budget).toBeInstanceOf(ContextBudget);
   });
+
+  it("resets all zones", () => {
+    const budget = makeBudget();
+    budget.recordUsage("tools", 100);
+    budget.reset();
+    expect(budget.remaining("tools")).toBe(200);
+  });
 });
