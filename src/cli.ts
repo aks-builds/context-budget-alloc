@@ -47,6 +47,13 @@ function buildBudget(config: BudgetConfig, logPath?: string): ContextBudget {
   return budget;
 }
 
+function colorize(text: string, util: number): string {
+  if (!Number.isFinite(util)) return `\x1b[31m${text}\x1b[0m`;
+  if (util >= 0.9) return `\x1b[31m${text}\x1b[0m`;
+  if (util >= 0.7) return `\x1b[33m${text}\x1b[0m`;
+  return `\x1b[32m${text}\x1b[0m`;
+}
+
 function printStatus(config: BudgetConfig, logPath?: string): void {
   const budget = buildBudget(config, logPath);
   const result = budget.rebalance();
@@ -58,9 +65,9 @@ function printStatus(config: BudgetConfig, logPath?: string): void {
     `${"ZONE".padEnd(nameWidth)}  ${"CAP".padStart(8)}  ${"USED".padStart(8)}  ${"REMAINING".padStart(10)}  UTIL`
   );
   for (const zone of snapshot.zones) {
-    const util = Number.isFinite(zone.utilization) ? `${(zone.utilization * 100).toFixed(1)}%` : "n/a";
+    const utilText = Number.isFinite(zone.utilization) ? `${(zone.utilization * 100).toFixed(1)}%` : "n/a";
     console.log(
-      `${zone.name.padEnd(nameWidth)}  ${String(zone.capTokens).padStart(8)}  ${String(zone.usedTokens).padStart(8)}  ${String(zone.remainingTokens).padStart(10)}  ${util}`
+      `${zone.name.padEnd(nameWidth)}  ${String(zone.capTokens).padStart(8)}  ${String(zone.usedTokens).padStart(8)}  ${String(zone.remainingTokens).padStart(10)}  ${colorize(utilText, zone.utilization)}`
     );
   }
   console.log(`\nOverall utilization: ${(snapshot.overallUtilization * 100).toFixed(1)}%`);
