@@ -4,7 +4,7 @@ import type { BudgetConfig } from "./types.js";
 import { ContextBudget } from "./budget.js";
 import { loadBudgetConfigFile } from "./config.js";
 
-const VERSION = "0.0.1";
+const VERSION = "0.1.0";
 
 const HELP = `context-budget-alloc (cba) - manage an LLM context-window token budget
 
