@@ -16,7 +16,7 @@ Usage:
   cba --version                Show the installed version
 `;
 
-function sampleConfig(): BudgetConfig {
+export function sampleConfig(): BudgetConfig {
   return {
     totalTokens: 128000,
     zones: [
@@ -29,7 +29,7 @@ function sampleConfig(): BudgetConfig {
   };
 }
 
-function loadUsageLog(path: string): Array<{ zone: string; tokens: number }> {
+export function loadUsageLog(path: string): Array<{ zone: string; tokens: number }> {
   return readFileSync(path, "utf8")
     .split("\n")
     .map((line) => line.trim())
