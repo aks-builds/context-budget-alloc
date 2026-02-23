@@ -10,6 +10,9 @@
     "url": "git+https://github.com/aks-builds/context-budget-alloc.git"
   },
   "keywords": ["typescript", "llm", "context-window", "token-budget", "prompt-engineering", "ai-tooling"],
+  "engines": {
+    "node": ">=18"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
