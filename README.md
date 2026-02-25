@@ -8,7 +8,7 @@
 - [Why](#context-budget-alloc)
 - [Usage](#usage)
 - [CLI](#cli)
-
+- [More](#more)
 
 Large language model prompts are assembled from several distinct kinds of
 content: a system prompt, tool/function definitions, retrieved context,
@@ -22,9 +22,6 @@ target share of the window, or a hard token cap. The library tracks live
 usage per zone, tells you how much room is left, and, when a zone is about
 to overflow, either borrows spare capacity from an underused zone or reports
 which zone needs to be compressed.
-
-Status: core budget/zone tracking is in place; rebalancing and the CLI are
-still being built.
 
 ## Usage
 
@@ -51,7 +48,9 @@ console.log(budget.utilization("retrieval"));
 
 \`\`\`sh
 npx cba init                       # write a starter cba.config.json
-npx cba status cba.config.json     # print zone utilization
+npx cba status cba.config.json     # print a color-coded zone utilization table
+npx cba report cba.config.json     # print the same data as JSON
+npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage log first
 \`\`\`
 
 ## More
