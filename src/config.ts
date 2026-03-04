@@ -13,9 +13,25 @@ export function parseBudgetConfig(raw: unknown): BudgetConfig {
   if (!Array.isArray(obj.zones) || obj.zones.length === 0) {
     throw new InvalidZoneConfigError("Config must define at least one zone in `zones`.");
   }
-  for (const zone of obj.zones) {
-    if (typeof zone !== "object" || zone === null || typeof (zone as any).name !== "string") {
-      throw new InvalidZoneConfigError("Every zone needs a string `name`.");
+  for (const [index, zone] of obj.zones.entries()) {
+    if (typeof zone !== "object" || zone === null) {
+      throw new InvalidZoneConfigError(`Zone at index ${index} must be an object.`);
+    }
+    const z = zone as Record<string, unknown>;
+    if (typeof z.name !== "string" || !z.name.trim()) {
+      throw new InvalidZoneConfigError(`Zone at index ${index} needs a non-empty string \`name\`.`);
+    }
+    if (z.targetPercent !== undefined && typeof z.targetPercent !== "number") {
+      throw new InvalidZoneConfigError(`Zone "${z.name}" has a non-numeric targetPercent.`);
+    }
+    if (z.hardCapTokens !== undefined && typeof z.hardCapTokens !== "number") {
+      throw new InvalidZoneConfigError(`Zone "${z.name}" has a non-numeric hardCapTokens.`);
+    }
+    if (z.priority !== undefined && typeof z.priority !== "number") {
+      throw new InvalidZoneConfigError(`Zone "${z.name}" has a non-numeric priority.`);
+    }
+    if (z.lendable !== undefined && typeof z.lendable !== "boolean") {
+      throw new InvalidZoneConfigError(`Zone "${z.name}" has a non-boolean lendable.`);
     }
   }
   return obj as unknown as BudgetConfig;
