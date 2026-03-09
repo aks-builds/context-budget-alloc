@@ -34,6 +34,10 @@ export class ContextBudget {
     return zone;
   }
 
+  private zoneList(): Zone[] {
+    return Array.from(this.zones.values());
+  }
+
   recordUsage(zoneName: string, tokens: number): void {
     this.getZone(zoneName).record(tokens);
   }
@@ -55,24 +59,24 @@ export class ContextBudget {
 
   overallUtilization(): number {
     let used = 0;
-    for (const zone of this.zones.values()) used += zone.used;
+    for (const zone of this.zoneList()) used += zone.used;
     return this.totalTokens > 0 ? used / this.totalTokens : 0;
   }
 
   /** Attempt to resolve any zone that is currently over its cap. */
   rebalance(): RebalanceResult {
-    return this.strategy(Array.from(this.zones.values()), this.totalTokens);
+    return this.strategy(this.zoneList(), this.totalTokens);
   }
 
   /** Clear all zones' usage and borrowed adjustments, e.g. for a new conversation turn. */
   reset(): void {
-    for (const zone of this.zones.values()) zone.reset();
+    for (const zone of this.zoneList()) zone.reset();
   }
 
   snapshot(): BudgetSnapshot {
     return {
       totalTokens: this.totalTokens,
-      zones: Array.from(this.zones.values()).map((z) => ({
+      zones: this.zoneList().map((z) => ({
         name: z.name,
         capTokens: z.effectiveCap(this.totalTokens),
         usedTokens: z.used,
