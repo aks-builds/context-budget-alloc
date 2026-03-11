@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import type { BudgetConfig } from "./types.js";
+import type { BudgetConfig, RebalanceResult } from "./types.js";
 import { ContextBudget } from "./budget.js";
 import { loadBudgetConfigFile } from "./config.js";
 
@@ -14,6 +14,11 @@ Usage:
   cba report <config> [log]    Print a JSON snapshot instead of a table
   cba --help                   Show this help
   cba --version                Show the installed version
+
+Exit codes:
+  0  every zone is within its budget
+  1  usage error (missing/invalid arguments or config)
+  2  a zone overflowed and still needs compression after rebalancing
 `;
 
 export function sampleConfig(): BudgetConfig {
@@ -37,6 +42,10 @@ export function loadUsageLog(path: string): Array<{ zone: string; tokens: number
     .map((line) => JSON.parse(line));
 }
 
+export function computeExitCode(result: RebalanceResult): number {
+  return result.resolved ? 0 : 2;
+}
+
 function buildBudget(config: BudgetConfig, logPath?: string): ContextBudget {
   const budget = new ContextBudget(config);
   if (logPath) {
@@ -54,7 +63,7 @@ function colorize(text: string, util: number): string {
   return `\x1b[32m${text}\x1b[0m`;
 }
 
-function printStatus(config: BudgetConfig, logPath?: string): void {
+function printStatus(config: BudgetConfig, logPath?: string): number {
   const budget = buildBudget(config, logPath);
   const result = budget.rebalance();
   const snapshot = budget.snapshot();
@@ -82,12 +91,14 @@ function printStatus(config: BudgetConfig, logPath?: string): void {
       }
     }
   }
+  return computeExitCode(result);
 }
 
-function printReport(config: BudgetConfig, logPath?: string): void {
+function printReport(config: BudgetConfig, logPath?: string): number {
   const budget = buildBudget(config, logPath);
-  budget.rebalance();
+  const result = budget.rebalance();
   console.log(JSON.stringify(budget.snapshot(), null, 2));
+  return computeExitCode(result);
 }
 
 function main(): void {
@@ -122,11 +133,7 @@ function main(): void {
       return;
     }
     const config = loadBudgetConfigFile(configPath);
-    if (command === "report") {
-      printReport(config, rest[1]);
-    } else {
-      printStatus(config, rest[1]);
-    }
+    process.exitCode = command === "report" ? printReport(config, rest[1]) : printStatus(config, rest[1]);
     return;
   }
 
