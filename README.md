@@ -57,3 +57,11 @@ npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage
 
 - [Architecture overview](docs/architecture.md)
 - [Examples](examples/)
+
+## Exit codes
+
+`cba status` and `cba report` exit with:
+
+- `0` - every zone is within its budget
+- `1` - a usage error (missing or invalid arguments/config)
+- `2` - a zone overflowed and still needs compression after rebalancing
