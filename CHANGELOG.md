@@ -5,9 +5,12 @@ All notable changes to this project are documented in this file.
 ## [Unreleased]
 
 ### Added
+- `createBudget()` factory function and `ContextBudget.reset()`/`Zone.reset()` for reusing a budget across conversation turns.
+- Color-coded utilization in `cba status`, plus exit code 2 when a zone still needs compression after rebalancing.
+- Per-zone field type validation when parsing budget configs.
 - Pluggable `RebalanceStrategy` support via `ContextBudget`'s constructor.
 - Architecture overview and CONTRIBUTING docs.
-- `examples/basic-usage.ts` and `examples/custom-strategy.ts`.
+- `examples/basic-usage.ts`, `examples/custom-strategy.ts`, and `examples/token-tracking-loop.ts`.
 
 ## [0.1.0] - 2025-12-12
 
