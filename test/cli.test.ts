@@ -29,6 +29,13 @@ describe("cli helpers", () => {
     expect(loadUsageLog(file)).toHaveLength(2);
   });
 
+  it("reports the line number for a malformed usage log entry", () => {
+    const dir = mkdtempSync(join(tmpdir(), "cba-"));
+    const file = join(dir, "log.jsonl");
+    writeFileSync(file, '{"zone":"tools","tokens":5}\nnot json\n');
+    expect(() => loadUsageLog(file)).toThrow(/:2:/);
+  });
+
   it("maps a resolved rebalance to exit code 0", () => {
     expect(computeExitCode({ actions: [], resolved: true })).toBe(0);
   });

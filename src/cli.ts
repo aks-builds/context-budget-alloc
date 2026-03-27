@@ -35,11 +35,18 @@ export function sampleConfig(): BudgetConfig {
 }
 
 export function loadUsageLog(path: string): Array<{ zone: string; tokens: number }> {
-  return readFileSync(path, "utf8")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => JSON.parse(line));
+  const lines = readFileSync(path, "utf8").split("\n");
+  const entries: Array<{ zone: string; tokens: number }> = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    try {
+      entries.push(JSON.parse(line));
+    } catch (cause) {
+      throw new Error(`Malformed usage log entry at ${path}:${i + 1}: ${line}`, { cause });
+    }
+  }
+  return entries;
 }
 
 export function computeExitCode(result: RebalanceResult): number {
