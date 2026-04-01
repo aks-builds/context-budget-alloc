@@ -1,6 +1,6 @@
 {
   "name": "context-budget-alloc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manage an LLM context-window token budget across named zones (system, tools, retrieval, history, buffer) with live usage tracking and dynamic rebalancing.",
   "type": "module",
   "license": "MIT",
