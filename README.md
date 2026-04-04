@@ -6,8 +6,10 @@
 ## Table of contents
 
 - [Why](#context-budget-alloc)
+- [Features](#features)
 - [Usage](#usage)
 - [CLI](#cli)
+- [Exit codes](#exit-codes)
 - [More](#more)
 
 Large language model prompts are assembled from several distinct kinds of
@@ -22,6 +24,20 @@ target share of the window, or a hard token cap. The library tracks live
 usage per zone, tells you how much room is left, and, when a zone is about
 to overflow, either borrows spare capacity from an underused zone or reports
 which zone needs to be compressed.
+
+## Features
+
+- Named zones with a `targetPercent` share or a `hardCapTokens` ceiling.
+- Live per-zone and overall utilization tracking.
+- Dynamic rebalancing: borrow spare capacity from underused, lendable zones
+  before falling back to a `compress` signal.
+- Zone priority controls who borrows first and who lends first.
+- Tokenizer-agnostic estimators (`charsPerFourEstimator`, `wordBasedEstimator`)
+  or bring your own via `recordText()`.
+- Pluggable `RebalanceStrategy` if the default borrow/compress policy is not
+  what you want.
+- A `cba` CLI (`init`, `status`, `report`) for inspecting a budget from a
+  JSON config and an optional JSONL usage log.
 
 ## Usage
 
@@ -53,11 +69,6 @@ npx cba report cba.config.json     # print the same data as JSON
 npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage log first
 \`\`\`
 
-## More
-
-- [Architecture overview](docs/architecture.md)
-- [Examples](examples/)
-
 ## Exit codes
 
 `cba status` and `cba report` exit with:
@@ -65,3 +76,8 @@ npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage
 - `0` - every zone is within its budget
 - `1` - a usage error (missing or invalid arguments/config)
 - `2` - a zone overflowed and still needs compression after rebalancing
+
+## More
+
+- [Architecture overview](docs/architecture.md)
+- [Examples](examples/)
