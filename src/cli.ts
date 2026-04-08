@@ -4,16 +4,16 @@ import type { BudgetConfig, RebalanceResult } from "./types.js";
 import { ContextBudget } from "./budget.js";
 import { loadBudgetConfigFile } from "./config.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 const HELP = `context-budget-alloc (cba) - manage an LLM context-window token budget
 
 Usage:
-  cba init [path]              Write a starter budget config to [path] (default: cba.config.json)
-  cba status <config> [log]    Print zone utilization, optionally replaying a usage log (JSONL)
-  cba report <config> [log]    Print a JSON snapshot instead of a table
-  cba --help                   Show this help
-  cba --version                Show the installed version
+  cba init [path]                    Write a starter budget config to [path] (default: cba.config.json)
+  cba status <config> [log] [--json] Print zone utilization (table, or JSON with --json)
+  cba report <config> [log]          Print a JSON snapshot (same as status --json)
+  cba --help                         Show this help
+  cba --version                      Show the installed version
 
 Exit codes:
   0  every zone is within its budget
@@ -70,7 +70,7 @@ function colorize(text: string, util: number): string {
   return `\x1b[32m${text}\x1b[0m`;
 }
 
-function printStatus(config: BudgetConfig, logPath?: string): number {
+function printTable(config: BudgetConfig, logPath?: string): number {
   const budget = buildBudget(config, logPath);
   const result = budget.rebalance();
   const snapshot = budget.snapshot();
@@ -101,7 +101,7 @@ function printStatus(config: BudgetConfig, logPath?: string): number {
   return computeExitCode(result);
 }
 
-function printReport(config: BudgetConfig, logPath?: string): number {
+function printJson(config: BudgetConfig, logPath?: string): number {
   const budget = buildBudget(config, logPath);
   const result = budget.rebalance();
   console.log(JSON.stringify(budget.snapshot(), null, 2));
@@ -133,14 +133,16 @@ function main(): void {
   }
 
   if (command === "status" || command === "report") {
-    const configPath = rest[0];
+    const positional = rest.filter((arg) => arg !== "--json");
+    const asJson = command === "report" || rest.includes("--json");
+    const configPath = positional[0];
     if (!configPath || !existsSync(configPath)) {
-      console.error(`Usage: cba ${command} <config> [log]`);
+      console.error(`Usage: cba ${command} <config> [log] [--json]`);
       process.exitCode = 1;
       return;
     }
     const config = loadBudgetConfigFile(configPath);
-    process.exitCode = command === "report" ? printReport(config, rest[1]) : printStatus(config, rest[1]);
+    process.exitCode = asJson ? printJson(config, positional[1]) : printTable(config, positional[1]);
     return;
   }
 
