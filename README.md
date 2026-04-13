@@ -10,6 +10,7 @@
 - [Usage](#usage)
 - [CLI](#cli)
 - [Exit codes](#exit-codes)
+- [FAQ](#faq)
 - [More](#more)
 
 Large language model prompts are assembled from several distinct kinds of
@@ -63,9 +64,10 @@ console.log(budget.utilization("retrieval"));
 ## CLI
 
 \`\`\`sh
-npx cba init                       # write a starter cba.config.json
-npx cba status cba.config.json     # print a color-coded zone utilization table
-npx cba report cba.config.json     # print the same data as JSON
+npx cba init                              # write a starter cba.config.json
+npx cba status cba.config.json            # print a color-coded zone utilization table
+npx cba status cba.config.json --json     # ...or the same data as JSON
+npx cba report cba.config.json            # shorthand for status --json
 npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage log first
 \`\`\`
 
@@ -76,6 +78,13 @@ npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage
 - `0` - every zone is within its budget
 - `1` - a usage error (missing or invalid arguments/config)
 - `2` - a zone overflowed and still needs compression after rebalancing
+
+## FAQ
+
+**Why chars/4 instead of a real tokenizer?** So the library works for any
+model without a hard dependency on a specific tokenizer package. Pass your
+own `TokenCounter` (e.g. a wrapper around `tiktoken`) via `counter` in
+`BudgetConfig` if you need exact counts.
 
 ## More
 
