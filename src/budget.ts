@@ -5,6 +5,12 @@ import type { RebalanceStrategy } from "./plugins.js";
 import { defaultEstimator } from "./estimator.js";
 import { DuplicateZoneError, InvalidZoneConfigError, UnknownZoneError } from "./errors.js";
 
+function round(value: number, decimals = 4): number {
+  if (!Number.isFinite(value)) return value;
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
 export class ContextBudget {
   readonly totalTokens: number;
   private readonly zones = new Map<string, Zone>();
@@ -81,11 +87,11 @@ export class ContextBudget {
         capTokens: z.effectiveCap(this.totalTokens),
         usedTokens: z.used,
         remainingTokens: z.remaining(this.totalTokens),
-        utilization: z.utilization(this.totalTokens),
+        utilization: round(z.utilization(this.totalTokens)),
         priority: z.priority,
         lendable: z.lendable,
       })),
-      overallUtilization: this.overallUtilization(),
+      overallUtilization: round(this.overallUtilization()),
     };
   }
 
