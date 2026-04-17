@@ -84,4 +84,11 @@ describe("ContextBudget", () => {
     budget.reset();
     expect(budget.remaining("tools")).toBe(200);
   });
+
+  it("rounds snapshot utilization to avoid floating point noise", () => {
+    const budget = createBudget({ totalTokens: 3, zones: [{ name: "a", targetPercent: 1 }] });
+    budget.recordUsage("a", 1);
+    const snapshot = budget.snapshot();
+    expect(snapshot.zones[0].utilization).toBe(0.3333);
+  });
 });
