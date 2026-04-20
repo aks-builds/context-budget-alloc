@@ -86,6 +86,11 @@ model without a hard dependency on a specific tokenizer package. Pass your
 own `TokenCounter` (e.g. a wrapper around `tiktoken`) via `counter` in
 `BudgetConfig` if you need exact counts.
 
+**Why is utilization rounded to 4 decimal places in JSON output?** So
+`1/3` shows up as `0.3333` instead of `0.3333333333333333` in `cba report`
+output; the in-memory `Zone.utilization()` value used for rebalancing
+decisions is not rounded.
+
 ## More
 
 - [Architecture overview](docs/architecture.md)
