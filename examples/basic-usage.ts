@@ -16,5 +16,9 @@ budget.recordUsage("retrieval", 42000);
 budget.recordUsage("history", 60000);
 
 const result = budget.rebalance();
-console.log(JSON.stringify(result, null, 2));
-console.log(JSON.stringify(budget.snapshot(), null, 2));
+console.log("rebalance:", JSON.stringify(result, null, 2));
+console.log("snapshot:", JSON.stringify(budget.snapshot(), null, 2));
+
+// Start a fresh turn with the same zone configuration.
+budget.reset();
+console.log("after reset, overall utilization:", budget.overallUtilization());
