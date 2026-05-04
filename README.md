@@ -10,6 +10,7 @@
 - [Usage](#usage)
 - [CLI](#cli)
 - [Exit codes](#exit-codes)
+- [Integration](#integration)
 - [FAQ](#faq)
 - [More](#more)
 
@@ -78,6 +79,14 @@ npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage
 - `0` - every zone is within its budget
 - `1` - a usage error (missing or invalid arguments/config)
 - `2` - a zone overflowed and still needs compression after rebalancing
+
+## Integration
+
+`recordText()`/`recordUsage()` are meant to be called from wherever your
+application assembles a prompt. See
+[`examples/express-middleware.ts`](examples/express-middleware.ts) for a
+framework-agnostic sketch of tracking a chat request's messages against a
+budget and rejecting/flagging it when zones overflow.
 
 ## FAQ
 
