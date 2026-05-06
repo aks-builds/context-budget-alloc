@@ -1,9 +1,15 @@
 import type { TokenCounter } from "./types.js";
 
-/** Rough tokenizer-agnostic estimate: ~4 characters per token. */
+/**
+ * Rough tokenizer-agnostic estimate: ~4 characters per token. Counts Unicode
+ * code points (via Array.from) rather than UTF-16 code units, so a string
+ * containing surrogate-pair characters (many emoji, some scripts) is not
+ * over-counted.
+ */
 export const charsPerFourEstimator: TokenCounter = (text) => {
   if (!text) return 0;
-  return Math.max(1, Math.ceil(text.length / 4));
+  const length = Array.from(text).length;
+  return Math.max(1, Math.ceil(length / 4));
 };
 
 /** Rougher word-based estimate: ~0.75 tokens per whitespace-separated word. */
