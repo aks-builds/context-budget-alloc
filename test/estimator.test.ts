@@ -13,6 +13,11 @@ describe("charsPerFourEstimator", () => {
   it("returns at least 1 token for non-empty text", () => {
     expect(charsPerFourEstimator("hi")).toBe(1);
   });
+
+  it("counts unicode code points, not UTF-16 code units", () => {
+    // 4 emoji code points (each a surrogate pair in UTF-16) -> 1 token, not 2.
+    expect(charsPerFourEstimator("\u{1F600}\u{1F600}\u{1F600}\u{1F600}")).toBe(1);
+  });
 });
 
 describe("wordBasedEstimator", () => {
