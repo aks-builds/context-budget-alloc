@@ -46,6 +46,15 @@ describe("Zone", () => {
     expect(zone.remaining(100)).toBe(15);
   });
 
+  it("nets back to the original remaining capacity after borrowing then lending the same amount", () => {
+    const zone = new Zone({ name: "buffer", targetPercent: 0.1 });
+    zone.record(5);
+    const before = zone.remaining(100);
+    zone.borrow(20);
+    zone.borrow(-20);
+    expect(zone.remaining(100)).toBe(before);
+  });
+
   it("resets usage and borrowed tokens", () => {
     const zone = new Zone({ name: "history", targetPercent: 0.5 });
     zone.record(10);
