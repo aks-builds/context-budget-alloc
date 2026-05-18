@@ -28,6 +28,33 @@ effective cap, then tries to borrow spare capacity from other zones:
 The default strategy lives in `rebalance.ts`; a custom `RebalanceStrategy`
 can be passed into `ContextBudget`'s constructor to replace it entirely.
 
+```
+recordUsage("history", N)
+        |
+        v
+  Zone("history").used += N
+        |
+        v
+  budget.rebalance()
+        |
+        v
+  history.remaining < 0 ? --no--> done, resolved=true
+        |
+       yes
+        v
+  find lendable zones with spare capacity, lowest priority first
+        |
+        v
+  borrow from each until deficit covered or lenders exhausted
+        |
+        v
+  deficit > 0 ? --yes--> emit compress action, resolved=false
+        |
+       no
+        v
+  done, resolved=true
+```
+
 ## Config validation
 
 `parseBudgetConfig()` (used by the CLI) validates `totalTokens` and, for
