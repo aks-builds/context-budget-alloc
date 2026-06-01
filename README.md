@@ -100,6 +100,12 @@ own `TokenCounter` (e.g. a wrapper around `tiktoken`) via `counter` in
 output; the in-memory `Zone.utilization()` value used for rebalancing
 decisions is not rounded.
 
+**When should I use `hardCapTokens` instead of `targetPercent`?** Use
+`targetPercent` for zones that should scale with the window size (retrieval,
+history, buffer). Use `hardCapTokens` for zones with a fixed real-world
+ceiling regardless of window size, such as a system prompt or a fixed set of
+tool schemas that do not grow with a bigger model.
+
 ## More
 
 - [Architecture overview](docs/architecture.md)
