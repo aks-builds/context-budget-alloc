@@ -7,6 +7,14 @@ import type { Zone } from "./zone.js";
  * borrow first; among lenders, lower-priority zones lend first.
  */
 export function rebalance(zones: Zone[], totalTokens: number): RebalanceResult {
+  if (!Number.isFinite(totalTokens) || totalTokens <= 0) {
+    // Nothing meaningful to borrow against - anything used is over budget.
+    const actions: RebalanceAction[] = zones
+      .filter((zone) => zone.used > 0)
+      .map((zone) => ({ type: "compress" as const, zone: zone.name, amount: zone.used }));
+    return { actions, resolved: actions.length === 0 };
+  }
+
   const actions: RebalanceAction[] = [];
   let resolved = true;
 
