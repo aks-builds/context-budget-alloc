@@ -59,4 +59,18 @@ describe("rebalance", () => {
     const second = rebalance([a, b], 100);
     expect(second.actions).toEqual([]);
   });
+
+  it("compresses everything with usage when totalTokens is zero", () => {
+    const a = new Zone({ name: "a", hardCapTokens: 10 });
+    a.record(5);
+    const result = rebalance([a], 0);
+    expect(result.resolved).toBe(false);
+    expect(result.actions).toEqual([{ type: "compress", zone: "a", amount: 5 }]);
+  });
+
+  it("is resolved when totalTokens is zero and nothing has been used", () => {
+    const a = new Zone({ name: "a", hardCapTokens: 10 });
+    const result = rebalance([a], 0);
+    expect(result.resolved).toBe(true);
+  });
 });
