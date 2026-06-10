@@ -24,6 +24,9 @@ export class Zone {
         `Zone "${config.name}" must set targetPercent or hardCapTokens.`
       );
     }
+    if (config.priority !== undefined && !Number.isFinite(config.priority)) {
+      throw new InvalidZoneConfigError(`Zone "${config.name}" priority must be a finite number.`);
+    }
     this.name = config.name.trim();
     this.targetPercent = config.targetPercent;
     this.hardCapTokens = config.hardCapTokens;
