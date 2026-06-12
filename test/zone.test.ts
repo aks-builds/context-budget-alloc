@@ -21,6 +21,11 @@ describe("Zone", () => {
     expect(() => new Zone({ name: "bad" })).toThrow();
   });
 
+  it("rejects a non-finite priority", () => {
+    expect(() => new Zone({ name: "bad", targetPercent: 0.1, priority: NaN })).toThrow();
+    expect(() => new Zone({ name: "bad", targetPercent: 0.1, priority: Infinity })).toThrow();
+  });
+
   it("trims whitespace from zone names", () => {
     const zone = new Zone({ name: "  history  ", targetPercent: 0.4 });
     expect(zone.name).toBe("history");
