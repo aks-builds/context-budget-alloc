@@ -7,9 +7,12 @@ All notable changes to this project are documented in this file.
 ### Added
 - `examples/express-middleware.ts` showing a framework-agnostic integration sketch.
 - A Code of Conduct.
+- `npm run test:coverage`.
 
 ### Fixed
 - `charsPerFourEstimator` now counts Unicode code points instead of UTF-16 code units, so emoji-heavy text is not over-counted.
+- `rebalance()` no longer misbehaves when `totalTokens` is zero or non-finite.
+- `Zone` rejects a non-finite `priority` (`NaN`/`Infinity`) instead of silently accepting it.
 
 ## [0.2.0] - 2026-04-02
 
