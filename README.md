@@ -110,3 +110,15 @@ tool schemas that do not grow with a bigger model.
 
 - [Architecture overview](docs/architecture.md)
 - [Examples](examples/)
+
+## Installing
+
+This package is not yet published to npm. Use it from source:
+
+\`\`\`sh
+git clone https://github.com/aks-builds/context-budget-alloc.git
+cd context-budget-alloc
+npm install
+npm run build
+npm link   # optional: makes the cba command available globally
+\`\`\`
