@@ -1,8 +1,8 @@
 import { createBudget } from "../src/index.js";
 
 // Simulates tracking a multi-turn conversation against a fixed context
-// window, rebalancing after each turn and starting fresh each time the
-// conversation is summarized away.
+// window: rebalance after each turn, and reset() when the conversation is
+// summarized away and history starts fresh.
 const budget = createBudget({
   totalTokens: 32000,
   zones: [
