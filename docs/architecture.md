@@ -5,7 +5,8 @@
 A `Zone` wraps either a `targetPercent` (a share of the total window) or a
 `hardCapTokens` (an absolute ceiling). `Zone.capTokens(totalTokens)` resolves
 whichever kind of cap was configured. Zones also track `used` tokens and a
-`borrowed` adjustment applied during rebalancing.
+`borrowed` adjustment applied during rebalancing. Zone construction validates
+that `priority` (when set) is a finite number.
 
 ## ContextBudget
 
@@ -24,6 +25,9 @@ effective cap, then tries to borrow spare capacity from other zones:
 2. For each one, lendable zones with spare capacity are sorted lowest-priority
    first and drained until the deficit is covered or lenders run out.
 3. Any deficit left over after borrowing is reported as a `compress` action.
+
+If `totalTokens` is zero or non-finite, every zone with recorded usage is
+reported as needing compression rather than attempting any borrowing math.
 
 The default strategy lives in `rebalance.ts`; a custom `RebalanceStrategy`
 can be passed into `ContextBudget`'s constructor to replace it entirely.
