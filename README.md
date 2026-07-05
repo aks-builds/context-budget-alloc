@@ -122,3 +122,7 @@ npm install
 npm run build
 npm link   # optional: makes the cba command available globally
 \`\`\`
+
+## Tags
+
+\`typescript\` \`llm\` \`context-window\` \`token-budget\` \`prompt-engineering\` \`ai-tooling\`
