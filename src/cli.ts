@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 import type { BudgetConfig, RebalanceResult } from "./types.js";
 import { ContextBudget } from "./budget.js";
 import { loadBudgetConfigFile } from "./config.js";
 
-const VERSION = "0.2.0";
+const VERSION = "1.0.0";
 
 const HELP = `context-budget-alloc (cba) - manage an LLM context-window token budget
 
@@ -126,6 +127,10 @@ function main(): void {
       console.error(`${path} already exists.`);
       process.exitCode = 1;
       return;
+    }
+    const dir = dirname(path);
+    if (dir && dir !== "." && !existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
     }
     writeFileSync(path, JSON.stringify(sampleConfig(), null, 2) + "\n");
     console.log(`Wrote starter config to ${path}`);
