@@ -11,6 +11,11 @@ describe("cli helpers", () => {
     expect(config.zones.map((z) => z.name)).toContain("retrieval");
   });
 
+  it("sample config zones add up to a full window", () => {
+    const total = sampleConfig().zones.reduce((sum, z) => sum + (z.targetPercent ?? 0), 0);
+    expect(total).toBeCloseTo(1, 5);
+  });
+
   it("loads a JSONL usage log", () => {
     const dir = mkdtempSync(join(tmpdir(), "cba-"));
     const file = join(dir, "log.jsonl");
@@ -42,10 +47,5 @@ describe("cli helpers", () => {
 
   it("maps an unresolved rebalance to exit code 2", () => {
     expect(computeExitCode({ actions: [{ type: "compress", zone: "a", amount: 5 }], resolved: false })).toBe(2);
-  });
-
-  it("sample config zones add up to a full window", () => {
-    const total = sampleConfig().zones.reduce((sum, z) => sum + (z.targetPercent ?? 0), 0);
-    expect(total).toBeCloseTo(1, 5);
   });
 });
