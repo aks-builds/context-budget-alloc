@@ -73,4 +73,19 @@ describe("rebalance", () => {
     const result = rebalance([a], 0);
     expect(result.resolved).toBe(true);
   });
+
+  it("splits a shared lender's spare capacity across two overflowing zones by priority", () => {
+    const high = new Zone({ name: "high", targetPercent: 0.2, priority: 5 });
+    const low = new Zone({ name: "low", targetPercent: 0.2, priority: 1 });
+    const lender = new Zone({ name: "lender", targetPercent: 0.3, priority: 0 });
+    high.record(25);
+    low.record(25);
+
+    const result = rebalance([high, low, lender], 100);
+    const borrowedByHigh = result.actions.find((a) => a.zone === "high" && a.type === "borrow");
+    const borrowedByLow = result.actions.find((a) => a.zone === "low" && a.type === "borrow");
+    expect(borrowedByHigh?.amount).toBe(5);
+    // the higher-priority zone was serviced first, leaving less for "low"
+    expect(borrowedByLow?.amount ?? 0).toBeLessThanOrEqual(5);
+  });
 });
