@@ -109,8 +109,13 @@ function printJson(config: BudgetConfig, logPath?: string): number {
   return computeExitCode(result);
 }
 
+function parseArgs(argv: string[]): { command?: string; rest: string[] } {
+  const [command, ...rest] = argv;
+  return { command, rest };
+}
+
 function main(): void {
-  const [, , command, ...rest] = process.argv;
+  const { command, rest } = parseArgs(process.argv.slice(2));
 
   if (!command || command === "--help" || command === "-h") {
     console.log(HELP);
