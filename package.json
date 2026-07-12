@@ -1,7 +1,7 @@
 {
   "name": "context-budget-alloc",
   "version": "1.0.0",
-  "description": "Manage an LLM context-window token budget across named zones (system, tools, retrieval, history, buffer) with live usage tracking and dynamic rebalancing.",
+  "description": "TypeScript library and CLI for allocating and rebalancing an LLM context-window token budget across named zones (system, tools, retrieval, history, buffer).",
   "type": "module",
   "license": "MIT",
   "author": "aks-builds",
@@ -10,7 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/aks-builds/context-budget-alloc.git"
   },
-  "keywords": ["typescript", "llm", "context-window", "token-budget", "prompt-engineering", "ai-tooling"],
+  "keywords": [
+    "typescript",
+    "llm",
+    "context-window",
+    "token-budget",
+    "prompt-engineering",
+    "ai-tooling"
+  ],
   "engines": {
     "node": ">=18"
   },
