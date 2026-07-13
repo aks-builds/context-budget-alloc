@@ -72,3 +72,9 @@ runtime failure deep inside `Zone`.
 `cba status`/`cba report` return `0` when every zone is within budget, `1`
 for usage errors, and `2` when a zone still needs compression after
 rebalancing - so the CLI can be used as a CI gate.
+
+## Stability
+
+As of 1.0.0, `ContextBudget`, `Zone`, `rebalance()`, the estimator functions,
+and the `cba` CLI's flags/exit codes are considered stable. Breaking changes
+will bump the major version.
