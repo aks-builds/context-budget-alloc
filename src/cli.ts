@@ -161,4 +161,8 @@ function main(): void {
   process.exitCode = 1;
 }
 
-main();
+// Only run when this file is the process entry point, not when it is
+// imported (e.g. by tests importing sampleConfig()/loadUsageLog()).
+if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`) {
+  main();
+}
