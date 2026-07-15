@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { BudgetConfig, RebalanceResult } from "./types.js";
 import { ContextBudget } from "./budget.js";
 import { loadBudgetConfigFile } from "./config.js";
@@ -163,6 +164,7 @@ function main(): void {
 
 // Only run when this file is the process entry point, not when it is
 // imported (e.g. by tests importing sampleConfig()/loadUsageLog()).
-if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`) {
+const isEntryPoint = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isEntryPoint) {
   main();
 }
