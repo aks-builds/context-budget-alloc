@@ -72,6 +72,8 @@ npx cba report cba.config.json            # shorthand for status --json
 npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage log first
 \`\`\`
 
+![cba status output](.github/media/cba-status.png)
+
 ## Exit codes
 
 `cba status` and `cba report` exit with:
