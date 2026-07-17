@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-17
+
 ## [1.0.0] - 2026-07-03
 
 The API has been stable since 0.2.0; this release marks it as such.
