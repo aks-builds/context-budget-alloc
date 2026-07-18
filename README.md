@@ -1,11 +1,23 @@
-# context-budget-alloc
+<div align="center">
+
+# 🧮 context-budget-alloc
+
+**Split an LLM context window into named token budgets, rebalance them live, and inspect usage from the CLI.**
 
 ![CI](https://github.com/aks-builds/context-budget-alloc/actions/workflows/ci.yml/badge.svg)
+![CodeQL](https://github.com/aks-builds/context-budget-alloc/actions/workflows/codeql.yml/badge.svg)
+![npm version](https://img.shields.io/npm/v/context-budget-alloc)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+
+![cba status output](.github/media/cba-status.png)
+
+*Real capture of `cba status` replaying [`examples/usage-log.sample.jsonl`](examples/usage-log.sample.jsonl) against [`examples/config.sample.json`](examples/config.sample.json).*
+
+</div>
 
 ## Table of contents
 
-- [Why](#context-budget-alloc)
+- [Why context-budget-alloc](#why-context-budget-alloc)
 - [Features](#features)
 - [Usage](#usage)
 - [CLI](#cli)
@@ -13,6 +25,10 @@
 - [Integration](#integration)
 - [FAQ](#faq)
 - [More](#more)
+- [Installing](#installing)
+- [Tags](#tags)
+
+## Why context-budget-alloc
 
 Large language model prompts are assembled from several distinct kinds of
 content: a system prompt, tool/function definitions, retrieved context,
@@ -43,7 +59,7 @@ which zone needs to be compressed.
 
 ## Usage
 
-\`\`\`ts
+```ts
 import { ContextBudget } from "context-budget-alloc";
 
 const budget = new ContextBudget({
@@ -60,19 +76,17 @@ const budget = new ContextBudget({
 budget.recordUsage("retrieval", 12000);
 console.log(budget.remaining("retrieval"));
 console.log(budget.utilization("retrieval"));
-\`\`\`
+```
 
 ## CLI
 
-\`\`\`sh
+```sh
 npx cba init                              # write a starter cba.config.json
 npx cba status cba.config.json            # print a color-coded zone utilization table
 npx cba status cba.config.json --json     # ...or the same data as JSON
 npx cba report cba.config.json            # shorthand for status --json
 npx cba status cba.config.json examples/usage-log.sample.jsonl  # replay a usage log first
-\`\`\`
-
-![cba status output](.github/media/cba-status.png)
+```
 
 ## Exit codes
 
@@ -117,14 +131,14 @@ tool schemas that do not grow with a bigger model.
 
 This package is not yet published to npm. Use it from source:
 
-\`\`\`sh
+```sh
 git clone https://github.com/aks-builds/context-budget-alloc.git
 cd context-budget-alloc
 npm install
 npm run build
 npm link   # optional: makes the cba command available globally
-\`\`\`
+```
 
 ## Tags
 
-\`typescript\` \`llm\` \`context-window\` \`token-budget\` \`prompt-engineering\` \`ai-tooling\`
+`typescript` `llm` `context-window` `token-budget` `prompt-engineering` `ai-tooling`
