@@ -19,13 +19,15 @@
 
 - [Why context-budget-alloc](#why-context-budget-alloc)
 - [Features](#features)
+- [Installing](#installing)
 - [Usage](#usage)
 - [CLI](#cli)
 - [Exit codes](#exit-codes)
 - [Integration](#integration)
+- [Real test run](#real-test-run)
+- [Example data used in this README](#example-data-used-in-this-readme)
 - [FAQ](#faq)
 - [More](#more)
-- [Installing](#installing)
 - [Tags](#tags)
 
 ## Why context-budget-alloc
@@ -56,6 +58,31 @@ which zone needs to be compressed.
   what you want.
 - A `cba` CLI (`init`, `status`, `report`) for inspecting a budget from a
   JSON config and an optional JSONL usage log.
+
+## Installing
+
+```sh
+npm install context-budget-alloc
+```
+
+The `cba` CLI is exposed as a bin, so it's also available via `npx`:
+
+```sh
+npx cba init
+```
+
+<details>
+<summary>Build from source instead</summary>
+
+```sh
+git clone https://github.com/aks-builds/context-budget-alloc.git
+cd context-budget-alloc
+npm install
+npm run build
+npm link   # optional: makes the cba command available globally
+```
+
+</details>
 
 ## Usage
 
@@ -104,6 +131,26 @@ application assembles a prompt. See
 framework-agnostic sketch of tracking a chat request's messages against a
 budget and rejecting/flagging it when zones overflow.
 
+## Real test run
+
+![npm test output](.github/media/test-run.png)
+
+*Real capture of `npm test` (`vitest run`) against the current test suite — all suites passing.*
+
+## Example data used in this README
+
+The hero screenshot above replays this mock usage log — one JSONL line per
+recorded zone read, matching the shape `recordUsage()`/`recordText()` expect
+internally. It's the same file shipped at
+[`examples/usage-log.sample.jsonl`](examples/usage-log.sample.jsonl):
+
+```jsonl
+{"zone": "system", "tokens": 1200}
+{"zone": "tools", "tokens": 4300}
+{"zone": "retrieval", "tokens": 28000}
+{"zone": "history", "tokens": 51000}
+```
+
 ## FAQ
 
 **Why chars/4 instead of a real tokenizer?** So the library works for any
@@ -126,18 +173,6 @@ tool schemas that do not grow with a bigger model.
 
 - [Architecture overview](docs/architecture.md)
 - [Examples](examples/)
-
-## Installing
-
-This package is not yet published to npm. Use it from source:
-
-```sh
-git clone https://github.com/aks-builds/context-budget-alloc.git
-cd context-budget-alloc
-npm install
-npm run build
-npm link   # optional: makes the cba command available globally
-```
 
 ## Tags
 
